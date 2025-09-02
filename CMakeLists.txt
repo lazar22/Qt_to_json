@@ -9,10 +9,12 @@ find_package(Qt6 COMPONENTS Widgets Core REQUIRED)
 add_executable(executable
         main.cpp
         ${LIB_DIR}/window/window.cpp
+        ${LIB_DIR}/character/character.cpp
 )
 
 target_include_directories(executable PRIVATE
         ${LIB_DIR}/window
+        ${LIB_DIR}/character
 )
 
 target_link_libraries(executable PRIVATE Qt6::Widgets Qt6::Core)

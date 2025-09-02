@@ -14,7 +14,7 @@
 #include <QLabel>
 
 class app_window final : public QMainWindow {
-    int app_width = 1200;
+    int app_width = 1000;
     int app_height = 600;
 
 private:
