@@ -1,16 +1,77 @@
 #include "window.h"
 #include "character.h"
 
+#include <QWidgetAction>
 #include <QVBoxLayout>
 #include <QFormLayout>
-#include <QPixmap>
 #include <QFileDialog>
+#include <QGroupBox>
+#include <QMenuBar>
+#include <QPixmap>
 #include <QDebug>
 
 app_window::app_window(QWidget *parent)
-    : QMainWindow(parent) {
-    setWindowTitle("Character Editor");
+    : QMainWindow(parent), _settings("Blue Archive", "window") {
+    setWindowTitle("Blue Archive Character Creator");
     setFixedSize(app_width, app_height);
+
+    // add menus:
+    auto *menu_bar = this->menuBar();
+    auto *fill_menu = menu_bar->addMenu("File");
+
+    _file_path_combo = new QComboBox(this);
+    _file_path_combo->setFixedWidth(300);
+    load_path_file();
+
+    QAction *browse_action = new QAction("Browse...", this);
+    fill_menu->addAction(browse_action);
+
+    QWidgetAction *combo_action = new QWidgetAction(this);
+    combo_action->setDefaultWidget(_file_path_combo);
+    fill_menu->addAction(combo_action);
+
+    // Dark Theam
+    this->setStyleSheet(R"(
+    QWidget {
+        background-color: #1A1E2D;
+        color: white;
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        font-size: 13px;
+    }
+
+    QLabel {
+        color: white;
+    }
+
+    QLineEdit {
+        background-color: #2A2E3D;
+        color: white;
+        border: 1px solid #3A3F51;
+        border-radius: 4px;
+        padding: 2px 4px;
+        min-width: 50px;
+    }
+
+    QComboBox {
+        background-color: #2A2E3D;
+        color: white;
+        border: 1px solid #3A3F51;
+        border-radius: 4px;
+        padding: 2px 4px;
+        min-width: 80px;
+    }
+
+    QPushButton {
+        background-color: #334;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 4px;
+    }
+
+    QPushButton:hover {
+        background-color: #446;
+    }
+)");
 
     _central.setParent(this);
     setCentralWidget(&_central);
@@ -22,7 +83,15 @@ app_window::app_window(QWidget *parent)
     _imageLabel.setParent(this);
     _imageLabel.setText("Drop image here");
     _imageLabel.setFixedSize(app_width / 2, app_height - 20);
-    _imageLabel.setStyleSheet("background-color: white; border: 1px solid gray;");
+    _imageLabel.setStyleSheet(R"(
+    QLabel {
+        background-color: #2A2E3D;
+        border: 2px dashed #3A3F51;
+        border-radius: 10px;
+        color: #888;
+        font-size: 14px;
+    }
+)");
     _imageLabel.setAlignment(Qt::AlignCenter);
     mainLayout->addWidget(&_imageLabel);
 
@@ -33,6 +102,9 @@ app_window::app_window(QWidget *parent)
     _aftername_input.setParent(this);
     _age_input.setParent(this);
     _height_input.setParent(this);
+
+    _age_input.setFixedWidth(50);
+    _height_input.setFixedWidth(50);
 
     auto *basic_info = new QFormLayout;
     basic_info->addRow("Name:", &_name_input);
@@ -47,29 +119,93 @@ app_window::app_window(QWidget *parent)
     right_panel->addLayout(basic_info_grid);
 
     // Dropdowns
-    _combat_class_combo.setParent(this);
+    QComboBox *combos[] = {
+        &_stars_combo, &_combat_class_combo,
+        &_type_combo, &_damage_class_combo, &_armor_class_combo,
+    };
+
+    for (auto *combo: combos) {
+        combo->setParent(this);
+        combo->setFixedWidth(100);
+    }
+
     _combat_class_combo.addItems(getCharacterCombatOptions());
-
-    _stars_combo.setParent(this);
     _stars_combo.addItems(getStarsOptions());
-
-    _school_combo.setParent(this);
     _school_combo.addItems(getSchoolOptions());
+    _type_combo.addItems(getCharacterTypeOptions());
+    _damage_class_combo.addItems(get_attack_type_options());
+    _armor_class_combo.addItems(getDefenseTypeOptions());
 
     auto *class_info_layout = new QGridLayout;
+    class_info_layout->setSpacing(5);
     class_info_layout->addWidget(new QLabel("Stars:"), 0, 0);
     class_info_layout->addWidget(&_stars_combo, 0, 1);
     class_info_layout->addWidget(new QLabel("Combat Class:"), 0, 2);
     class_info_layout->addWidget(&_combat_class_combo, 0, 3);
     right_panel->addLayout(class_info_layout);
 
+    auto *ch_type_layout = new QGridLayout;
+    ch_type_layout->addWidget(new QLabel("Type:"), 0, 0);
+    ch_type_layout->addWidget(&_type_combo, 0, 1);
+    ch_type_layout->addWidget(new QLabel("Attack:"), 0, 2);
+    ch_type_layout->addWidget(&_damage_class_combo, 0, 3);
+    ch_type_layout->addWidget(new QLabel("Defense:"), 0, 4);
+    ch_type_layout->addWidget(&_armor_class_combo, 0, 5);
+    right_panel->addLayout(ch_type_layout);
+
     auto *school_layout = new QFormLayout;
     school_layout->addRow("School:", &_school_combo);
     right_panel->addLayout(school_layout);
 
+    auto *terrain_layout = new QHBoxLayout;
+    QStringList terrain_icons = {"🏙️", "⛰️", "🏠"};
+    const QStringList face_options = {"😆", "😁", "😀", "😐", "😣", "😡"};
+
+    QComboBox *terrainCombos[] = {
+        &street_combo,
+        &outdoor_combo,
+        &indoor_combo
+    };
+
+    for (int i = 0; i < 3; ++i) {
+        auto *vbox = new QVBoxLayout;
+
+        QLabel *terrainIcon = new QLabel(terrain_icons[i]);
+        terrainIcon->setAlignment(Qt::AlignCenter);
+        terrainIcon->setStyleSheet("font-size: 35px;");
+        vbox->addWidget(terrainIcon);
+
+        QComboBox *combo = terrainCombos[i];
+        combo->addItems(face_options);
+        combo->setStyleSheet(R"(
+        QComboBox {
+            font-size: 30px;
+            padding: 2px;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 50px;
+        }
+        QComboBox QAbstractItemView {
+            font-size: 25px;
+            text-align: center;
+        }
+        QComboBox::drop-down {
+            width: 0px;
+        }
+    )");
+
+        vbox->addWidget(combo, 0, Qt::AlignCenter);
+        terrain_layout->addLayout(vbox);
+    }
+
+    right_panel->addLayout(terrain_layout);
+
     // Stats
-    create_stats_input_fields();
+    auto *stats_group = new QGroupBox("Character Stats");
     auto *stats_grid = new QGridLayout;
+
+    stats_group->setLayout(stats_grid);
+    stats_group->setStyleSheet("QGroupBox { font-weight: bold; margin-top: 10px; }");
 
     const QStringList buffer = {
         "HP", "ATK", "DEF", "Healing",
@@ -77,6 +213,13 @@ app_window::app_window(QWidget *parent)
         "CritRes", "CritDmg", "CritDmgRes",
         "Stability", "NormalAttRange", "CCPower",
         "CCRes", "DefPiercing", "MagCount",
+    };
+
+    const QStringList icons = {
+        "❤️", "⚔️", "🛡️", "✚",
+        "🎯", "🕴️", "💥", "❌💥",
+        "💣", "❌💣", "🧱", "📏",
+        "🌀", "🛡️🌀", "💀🛡️", "🔫"
     };
 
     QLineEdit *_buffer[17] = {
@@ -88,12 +231,13 @@ app_window::app_window(QWidget *parent)
     };
 
     for (int i = 0; i < buffer.size(); i++) {
-        int row = i / 2;
-        int col = (i % 2) * 2;
-        stats_grid->addWidget(new QLabel(buffer[i] + ":"), row, col);
+        const int row = i / 2;
+        const int col = (i % 2) * 2;
+        stats_grid->addWidget(new QLabel(icons[i] + " " + buffer[i] + ":"), row, col);
         stats_grid->addWidget(_buffer[i], row, col + 1);
     }
-    right_panel->addLayout(stats_grid);
+
+    right_panel->addWidget(stats_group);
 
     // Submit button
     _submitBtn.setParent(this);
@@ -110,31 +254,69 @@ app_window::app_window(QWidget *parent)
         qDebug() << "Name:" << _name_input.text();
         qDebug() << "HP:" << _hp_input.text();
     });
+
+    // Connect settings
+    connect(browse_action, &QAction::triggered, this, [this]() {
+        const QString path = QFileDialog::getOpenFileName(
+            this,
+            "Select JSON File",
+            QString(),
+            "JSON Files (*.json);;All Files (*)"
+        );
+
+        if (!path.isEmpty()) {
+            if (_file_path_combo->findText(path) == -1) {
+                _file_path_combo->addItem(path);
+            }
+
+            _file_path_combo->setCurrentIndex(_file_path_combo->findText(path));
+            save_file_path(path);
+        }
+    });
+
+    connect(_file_path_combo, &QComboBox::currentTextChanged, this, [this](const QString &text) {
+        save_file_path(text);
+    });
 }
 
 
 void app_window::create_stats_input_fields() {
-    _hp_input.setParent(this);
-    _atk_input.setParent(this);
-    _def_input.setParent(this);
-    _crit_input.setParent(this);
-    _crit_dmg_input.setParent(this);
-    _healing_input.setParent(this);
-    _accuracy_input.setParent(this);
-    _evasion_input.setParent(this);
-    _crit_res_input.setParent(this);
-    _crit_dmg_res_input.setParent(this);
-    _stability_input.setParent(this);
-    _normal_att_range_input.setParent(this);
-    _cc_power_input.setParent(this);
-    _cc_res_input.setParent(this);
-    _def_piercing_input.setParent(this);
-    _mag_count_input.setParent(this);
+    QLineEdit *inputs[] = {
+        &_hp_input, &_atk_input, &_def_input, &_healing_input,
+        &_accuracy_input, &_evasion_input, &_crit_input,
+        &_crit_res_input, &_crit_dmg_input, &_crit_dmg_res_input,
+        &_stability_input, &_normal_att_range_input, &_cc_power_input,
+        &_cc_res_input, &_def_piercing_input, &_mag_count_input,
+    };
+
+    const auto *validator = new QIntValidator(0, 999999, this);
+
+    for (auto *input: inputs) {
+        input->setParent(this);
+        input->setValidator(validator);
+        input->setAlignment(Qt::AlignRight);
+    }
 }
 
 void app_window::loadImage(const QString &path) {
     QPixmap pix(path);
     if (!pix.isNull()) {
-        _imageLabel.setPixmap(pix.scaled(_imageLabel.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        _imageLabel.setText(""); // Remove placeholder text
+        _imageLabel.setPixmap(pix.scaled(
+            _imageLabel.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    }
+}
+
+void app_window::save_file_path(const QString &path) {
+    _settings.setValue("lastFilePath", path);
+}
+
+void app_window::load_path_file() const {
+    QString lastPath = _settings.value("lastFilePath").toString();
+    if (!lastPath.isEmpty()) {
+        if (_file_path_combo->findText(lastPath) == -1) {
+            _file_path_combo->addItem(lastPath);
+        }
+        _file_path_combo->setCurrentText(lastPath);
     }
 }

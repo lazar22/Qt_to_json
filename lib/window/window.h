@@ -7,16 +7,19 @@
 
 #include <QApplication>
 #include <QMainWindow>
-#include <QVBoxLayout>
-#include <QFormLayout>
 #include <QPushButton>
 #include <QComboBox>
+#include <QSettings>
 #include <QLineEdit>
 #include <QLabel>
 
 class app_window final : public QMainWindow {
     int app_width = 1000;
     int app_height = 600;
+
+private:
+    QSettings _settings;
+    QComboBox *_file_path_combo;
 
 private:
     QWidget _central;
@@ -64,6 +67,10 @@ private:
 
     void loadImage(const QString &path);
 
+    void save_file_path(const QString &path);
+
+    void load_path_file() const;
+
     static QStringList getCharacterCombatOptions() {
         return {"Striker", "Special"};
     }
@@ -86,7 +93,7 @@ private:
         };
     }
 
-    static QStringList getAttackTypeOptions() {
+    static QStringList get_attack_type_options() {
         return {
             "Normal", "Explosion", "Penetration",
             "Mystic", "Sonic", "Siege"
