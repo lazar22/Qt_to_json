@@ -4,6 +4,7 @@
 
 #ifndef CHARACTER_H
 #define CHARACTER_H
+
 #include <string>
 
 enum control_power {
@@ -52,6 +53,21 @@ enum att_type {
     ATT_SIGE
 };
 
+enum school_names {
+    ABYDOS_HIGH_SCHOOL,
+    GEHENNA_ACADEMY,
+    MILLENNIUM_SCIENCE_SCHOOL,
+    TRINITY_GENERAL_SCHOOL,
+    HYAKKIYAKO_ALLIANCE_ACADEMY,
+    SHANHAIJING_SENIOR_SECONDARY_SCHOOL,
+    RED_WINTER_FEDERAl_ACADEMY,
+    VALKYRIE_POLICE_ACADEMY,
+    ARIUS_BRANCH_SCHOOL,
+    SRT_SPECIAL_ACADEMY,
+    KRONOS_SCHOOL_OF_JOURNALISM,
+    HIGHLANDER_RAILROAD_ACADEMY
+};
+
 class character {
     int id = 0;
 
@@ -66,10 +82,11 @@ class character {
     int armor_class = DEF_LIGHT;
     int damage_class = ATT_EXPLOSION;
 
+    int school = TRINITY_GENERAL_SCHOOL;
+
     struct info {
         int max_hp = 0;
         int atk = 0;
-        int dmg = 0;
         int healing = 0;
         int accuracy = 0;
         int evasion = 0;
@@ -98,11 +115,13 @@ public:
 
     void set_terrain_compatability(const int _street, const int _outdoor, const int _indoor);
 
-    void set_character_specification_info(const int _max_hp, const int _atk, const int _dmg, const int _healing,
+    void set_character_specification_info(const int _max_hp, const int _atk, const int _healing,
                                           const int _accuracy, const int _evasion, const int _crit, const int _crit_res,
                                           const int _crit_dmg, const int _crit_dmg_res, const int _stability,
                                           const int _normal_att_range, const int _cc_power, const int _cc_res,
                                           const int _def_piercing, const int _mag_count);
+
+    void set_school(const int _school);
 
     void create_character();
 };
