@@ -251,8 +251,29 @@ app_window::app_window(QWidget *parent)
 
     // Connect submit
     connect(&_submitBtn, &QPushButton::clicked, this, [this]() {
-        qDebug() << "Name:" << _name_input.text();
-        qDebug() << "HP:" << _hp_input.text();
+        character ch;
+        ch.set_basic_info(_name_input.text().toStdString(), _aftername_input.text().toStdString(),
+                          _age_input.text().toInt(), _height_input.text().toInt());
+
+        ch.set_class_info(_stars_combo.currentIndex(), _combat_class_combo.currentIndex(),
+                          _armor_class_combo.currentIndex(), _damage_class_combo.currentIndex());
+
+        ch.set_terrain_compatability(street_combo.currentIndex(),
+                                     outdoor_combo.currentIndex(),
+                                     indoor_combo.currentIndex());
+
+        ch.set_character_specification_info(_hp_input.text().toInt(), _atk_input.text().toInt(),
+                                            _healing_input.text().toInt(), _accuracy_input.text().toInt(),
+                                            _evasion_input.text().toInt(), _crit_input.text().toInt(),
+                                            _crit_res_input.text().toInt(), _crit_dmg_input.text().toInt(),
+                                            _crit_dmg_res_input.text().toInt(), _stability_input.text().toInt(),
+                                            _normal_att_range_input.text().toInt(), _cc_power_input.text().toInt(),
+                                            _cc_res_input.text().toInt(), _def_piercing_input.text().toInt(),
+                                            _mag_count_input.text().toInt());
+
+        ch.set_school(_school_combo.currentIndex());
+
+        // ch.create_character();
     });
 
     // Connect settings
@@ -301,7 +322,7 @@ void app_window::create_stats_input_fields() {
 void app_window::loadImage(const QString &path) {
     QPixmap pix(path);
     if (!pix.isNull()) {
-        _imageLabel.setText(""); // Remove placeholder text
+        _imageLabel.setText("");
         _imageLabel.setPixmap(pix.scaled(
             _imageLabel.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     }

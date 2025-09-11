@@ -30,9 +30,9 @@ enum character_type {
 };
 
 enum stars {
-    THREE_STAR,
-    TWO_STAR,
     ONE_STAR,
+    TWO_STAR,
+    THREE_STAR,
 };
 
 enum def_type {
@@ -100,13 +100,13 @@ class character {
         int cc_res = 0;
         int def_piercing = 0;
         int mag_count = 0;
-    };
+    } specification_;
 
     struct terrain {
         int street = CONTROL_POWER_OUTSTANDING;
         int outdoor = CHARACTER_COMBAT_STRIKER;
         int indoor = CHARACTER_COMBAT_STRIKER;
-    };
+    } terrain_;
 
 public:
     void set_basic_info(const std::string _name, const std::string _aftername, const int _age, const int _height);
@@ -124,6 +124,22 @@ public:
     void set_school(const int _school);
 
     void create_character();
+
+private:
+    //Helpers
+    static const char *control_power_to_string(const int value);
+
+    static const char *stars_to_string(const int value);
+
+    static const char *armor_type_to_string(const int value);
+
+    static const char *attack_type_to_string(const int value);
+
+    static const char *character_type_to_string(const int value);
+
+    static const char *character_combat_to_string(const int value);
+
+    static const char *school_to_string(const int value);
 };
 
 #endif //CHARACTER_H
