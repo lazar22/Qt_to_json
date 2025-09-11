@@ -123,7 +123,7 @@ public:
 
     void set_school(const int _school);
 
-    void create_character();
+    void create_character(const std::string &_path);
 
 private:
     //Helpers

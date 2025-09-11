@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <ostream>
+#include <fstream>
 
 void character::set_basic_info(const std::string _name, const std::string _aftername, const int _age,
                                const int _height) {
@@ -13,14 +14,6 @@ void character::set_basic_info(const std::string _name, const std::string _after
     aftername = _aftername;
     age = _age;
     height = _height;
-
-    // Debug
-    std::cout << "-=Basic Info=-" << std::endl;
-    std::cout << "Name: " << name << std::endl;
-    std::cout << "Aftername: " << aftername << std::endl;
-    std::cout << "Age: " << age << std::endl;
-    std::cout << "Height: " << height << std::endl;
-    std::cout << std::endl;
 }
 
 void character::set_class_info(const int _star, const int _combat_class, const int _armor_class,
@@ -29,14 +22,6 @@ void character::set_class_info(const int _star, const int _combat_class, const i
     combat_class = _combat_class;
     armor_class = _armor_class;
     damage_class = _damage_class;
-
-    // Debug
-    std::cout << "-=Class Info=-" << std::endl;
-    std::cout << "Stars: " << stars_to_string(_star) << std::endl;
-    std::cout << "Combat Class: " << character_combat_to_string(combat_class) << std::endl;
-    std::cout << "Armor Class: " << armor_type_to_string(armor_class) << std::endl;
-    std::cout << "Damage Class: " << attack_type_to_string(damage_class) << std::endl;
-    std::cout << std::endl;
 }
 
 void character::set_terrain_compatability(const int _street, const int _outdoor, const int _indoor) {
@@ -45,13 +30,6 @@ void character::set_terrain_compatability(const int _street, const int _outdoor,
         .outdoor = _outdoor,
         .indoor = _indoor
     };
-
-    // Debug
-    std::cout << "-=Terrain=-" << std::endl;
-    std::cout << "Street: " << control_power_to_string(terrain_.street) << std::endl;
-    std::cout << "Outdoor: " << control_power_to_string(terrain_.outdoor) << std::endl;
-    std::cout << "Indoor: " << control_power_to_string(terrain_.indoor) << std::endl;
-    std::cout << std::endl;
 }
 
 void character::set_character_specification_info(const int _max_hp, const int _atk, const int _healing,
@@ -76,34 +54,82 @@ void character::set_character_specification_info(const int _max_hp, const int _a
         .def_piercing = _def_piercing,
         .mag_count = _mag_count
     };
-
-    // Debug
-    std::cout << "-=Character Sped=-" << std::endl;
-    std::cout << "HP: " << specification_.max_hp << std::endl;
-    std::cout << "ATK: " << specification_.atk << std::endl;
-    std::cout << "Healing: " << specification_.healing << std::endl;
-    std::cout << "Accuracy: " << specification_.accuracy << std::endl;
-    std::cout << "Evasion: " << specification_.evasion << std::endl;
-    std::cout << "Crit: " << specification_.crit << std::endl;
-    std::cout << "Crit Res: " << specification_.crit_res << std::endl;
-    std::cout << "Crit Dmg: " << specification_.crit_dmg << std::endl;
-    std::cout << "Crit Dmg Res: " << specification_.crit_dmg_res << std::endl;
-    std::cout << "Stability: " << specification_.stability << std::endl;
-    std::cout << "Normal Att Range: " << specification_.normal_att_range << std::endl;
-    std::cout << "CC Power: " << specification_.cc_power << std::endl;
-    std::cout << "CC Res: " << specification_.cc_res << std::endl;
-    std::cout << "Def Piercing: " << specification_.def_piercing << std::endl;
-    std::cout << "Mag Count: " << specification_.mag_count << std::endl;
-    std::cout << std::endl;
 }
 
 void character::set_school(const int _school) {
     school = _school;
+}
 
-    // Debug
-    std::cout << "-=School=-" << std::endl;
-    std::cout << "School: " << school_to_string(school) << std::endl;
-    std::cout << std::endl;
+void character::create_character(const std::string &_path) {
+    std::cout << "Saving character... " << _path << std::endl;
+    if (!_path.empty()) {
+        const std::string file_name = name + "_" + aftername + ".json";
+        const std::string full_path = _path + "/" + file_name;
+
+        std::ofstream j_file(full_path);
+        if (j_file.is_open()) {
+            // Begin manual JSON formatting
+            j_file << "{\n";
+
+            // Basic Info
+            j_file << "  \"name\": \"" << name << "\",\n";
+            j_file << "  \"aftername\": \"" << aftername << "\",\n";
+            j_file << "  \"age\": " << age << ",\n";
+            j_file << "  \"height\": " << height << ",\n";
+
+            // Class Info
+            j_file << "  \"class_info\": {\n";
+            j_file << "    \"stars\": " << "\"" << stars_to_string(stars) << "\"" << ",\n";
+            j_file << "    \"combat_class\": " << "\"" << character_combat_to_string(combat_class) << "\"" << ",\n";
+            j_file << "    \"armor_class\": " << "\"" << armor_type_to_string(armor_class) << "\"" << ",\n";
+            j_file << "    \"damage_class\": " << "\"" << attack_type_to_string(damage_class) << "\"" << "\n";
+            j_file << "  },\n";
+
+            // Terrain
+            j_file << "  \"terrain\": {\n";
+            j_file << "    \"street\": " << "\"" << control_power_to_string(terrain_.street) << "\"" << ",\n";
+            j_file << "    \"outdoor\": " << "\"" << control_power_to_string(terrain_.outdoor) << "\"" << ",\n";
+            j_file << "    \"indoor\": " << "\"" << control_power_to_string(terrain_.indoor) << "\"" << "\n";
+            j_file << "  },\n";
+
+            // Stats
+            j_file << "  \"stats\": {\n";
+            j_file << "    \"max_hp\": " << specification_.max_hp << ",\n";
+            j_file << "    \"atk\": " << specification_.atk << ",\n";
+            j_file << "    \"healing\": " << specification_.healing << ",\n";
+            j_file << "    \"accuracy\": " << specification_.accuracy << ",\n";
+            j_file << "    \"evasion\": " << specification_.evasion << ",\n";
+            j_file << "    \"crit\": " << specification_.crit << ",\n";
+            j_file << "    \"crit_res\": " << specification_.crit_res << ",\n";
+            j_file << "    \"crit_dmg\": " << specification_.crit_dmg << ",\n";
+            j_file << "    \"crit_dmg_res\": " << specification_.crit_dmg_res << ",\n";
+            j_file << "    \"stability\": " << specification_.stability << ",\n";
+            j_file << "    \"normal_att_range\": " << specification_.normal_att_range << ",\n";
+            j_file << "    \"cc_power\": " << specification_.cc_power << ",\n";
+            j_file << "    \"cc_res\": " << specification_.cc_res << ",\n";
+            j_file << "    \"def_piercing\": " << specification_.def_piercing << ",\n";
+            j_file << "    \"mag_count\": " << specification_.mag_count << "\n";
+            j_file << "  },\n";
+
+            // School
+            j_file << "  \"school\": " << "\"" << school_to_string(school) << "\"" << ",\n";
+
+            // Weapon
+            j_file << "\"Weapon\": {\n}, \n";
+
+            // Ability
+            j_file << "\"Ability\": {\n}\n";
+
+            j_file << "}\n";
+
+            j_file.close();
+            std::cout << "✅ Character saved to: " << full_path << std::endl;
+        } else {
+            std::cerr << "[ERROR] Failed to write to: " << full_path << std::endl;
+        }
+    } else {
+        std::cerr << "[ERROR] Empty path provided!" << std::endl;
+    }
 }
 
 // Helpers

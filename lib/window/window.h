@@ -21,6 +21,8 @@ private:
     QSettings _settings;
     QComboBox *_file_path_combo;
 
+    QString _file_path;
+
 private:
     QWidget _central;
 
@@ -69,7 +71,7 @@ private:
 
     void save_file_path(const QString &path);
 
-    void load_path_file() const;
+    void load_path_file();
 
     static QStringList getCharacterCombatOptions() {
         return {"Striker", "Special"};

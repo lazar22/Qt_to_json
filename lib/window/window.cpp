@@ -273,16 +273,16 @@ app_window::app_window(QWidget *parent)
 
         ch.set_school(_school_combo.currentIndex());
 
-        // ch.create_character();
+        ch.create_character(_file_path.toStdString());
     });
 
     // Connect settings
     connect(browse_action, &QAction::triggered, this, [this]() {
-        const QString path = QFileDialog::getOpenFileName(
+        const QString path = QFileDialog::getExistingDirectory(
             this,
-            "Select JSON File",
+            "Select Character Output Folder",
             QString(),
-            "JSON Files (*.json);;All Files (*)"
+            QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
         );
 
         if (!path.isEmpty()) {
@@ -290,12 +290,14 @@ app_window::app_window(QWidget *parent)
                 _file_path_combo->addItem(path);
             }
 
-            _file_path_combo->setCurrentIndex(_file_path_combo->findText(path));
+            _file_path_combo->setCurrentText(path);
+            _file_path = path;
             save_file_path(path);
         }
     });
 
     connect(_file_path_combo, &QComboBox::currentTextChanged, this, [this](const QString &text) {
+        _file_path = text;
         save_file_path(text);
     });
 }
@@ -332,12 +334,13 @@ void app_window::save_file_path(const QString &path) {
     _settings.setValue("lastFilePath", path);
 }
 
-void app_window::load_path_file() const {
-    QString lastPath = _settings.value("lastFilePath").toString();
-    if (!lastPath.isEmpty()) {
-        if (_file_path_combo->findText(lastPath) == -1) {
-            _file_path_combo->addItem(lastPath);
+void app_window::load_path_file() {
+    QString last_path = _settings.value("lastFilePath").toString();
+    if (!last_path.isEmpty()) {
+        if (_file_path_combo->findText(last_path) == -1) {
+            _file_path_combo->addItem(last_path);
         }
-        _file_path_combo->setCurrentText(lastPath);
+        _file_path_combo->setCurrentText(last_path);
+        _file_path = last_path;
     }
 }
