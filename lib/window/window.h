@@ -5,13 +5,14 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include "dragdropimg.h"
+
 #include <QApplication>
 #include <QMainWindow>
 #include <QPushButton>
 #include <QComboBox>
 #include <QSettings>
 #include <QLineEdit>
-#include <QLabel>
 
 class app_window final : public QMainWindow {
     int app_width = 950;
@@ -22,11 +23,12 @@ private:
     QComboBox *_file_path_combo;
 
     QString _file_path;
+    QString _image_path;
 
 private:
     QWidget _central;
 
-    QLabel _imageLabel;
+    DragDropImgLabel _image_label;
     QPushButton _submitBtn;
 
     QLineEdit _name_input;
@@ -67,7 +69,7 @@ private:
 
     QComboBox _school_combo;
 
-    void loadImage(const QString &path);
+    void load_image(const QString &path);
 
     void save_file_path(const QString &path);
 

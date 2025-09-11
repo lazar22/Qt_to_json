@@ -80,10 +80,10 @@ app_window::app_window(QWidget *parent)
     auto *mainLayout = new QHBoxLayout;
 
     // Left Image
-    _imageLabel.setParent(this);
-    _imageLabel.setText("Drop image here");
-    _imageLabel.setFixedSize(app_width / 2, app_height - 20);
-    _imageLabel.setStyleSheet(R"(
+    _image_label.setParent(this);
+    _image_label.setText("Drop image here");
+    _image_label.setFixedSize(app_width / 2, app_height - 40);
+    _image_label.setStyleSheet(R"(
     QLabel {
         background-color: #2A2E3D;
         border: 2px dashed #3A3F51;
@@ -92,8 +92,12 @@ app_window::app_window(QWidget *parent)
         font-size: 14px;
     }
 )");
-    _imageLabel.setAlignment(Qt::AlignCenter);
-    mainLayout->addWidget(&_imageLabel);
+    _image_label.setAlignment(Qt::AlignCenter);
+    mainLayout->addWidget(&_image_label);
+
+    connect(&_image_label, &DragDropImgLabel::image_dropped, this, [this](const QString &path) {
+        load_image(path);
+    });
 
     // === Right Panel ===
     auto *right_panel = new QVBoxLayout;
@@ -273,6 +277,14 @@ app_window::app_window(QWidget *parent)
 
         ch.set_school(_school_combo.currentIndex());
 
+        const QString images_folder = _file_path + "/Images";
+        const QDir dir(images_folder);
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
+
+        ch.set_image(_image_path.toStdString(), images_folder.toStdString());
+
         ch.create_character(_file_path.toStdString());
     });
 
@@ -321,12 +333,13 @@ void app_window::create_stats_input_fields() {
     }
 }
 
-void app_window::loadImage(const QString &path) {
+void app_window::load_image(const QString &path) {
     QPixmap pix(path);
     if (!pix.isNull()) {
-        _imageLabel.setText("");
-        _imageLabel.setPixmap(pix.scaled(
-            _imageLabel.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        _image_label.setText("");
+        _image_label.setPixmap(pix.scaled(
+            _image_label.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        _image_path = path;
     }
 }
 

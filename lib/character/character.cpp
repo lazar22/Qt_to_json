@@ -4,6 +4,8 @@
 
 #include "character.h"
 
+#include <filesystem>
+#include <algorithm>
 #include <iostream>
 #include <ostream>
 #include <fstream>
@@ -60,10 +62,28 @@ void character::set_school(const int _school) {
     school = _school;
 }
 
-void character::create_character(const std::string &_path) {
-    std::cout << "Saving character... " << _path << std::endl;
+void character::set_image(const std::string &src_image_path, const std::string &dest_folder) {
+    std::cout << "Copying image from: " << src_image_path << " to: " << dest_folder << std::endl;
+    if (!src_image_path.empty() || !dest_folder.empty()) {
+        const std::string new_image_filename = to_lower(name) + "_" + to_lower(aftername) + ".png";
+        const std::filesystem::path dest_path = std::filesystem::path(dest_folder) / new_image_filename;
+
+        try {
+            std::filesystem::copy_file(src_image_path, dest_path, std::filesystem::copy_options::overwrite_existing);
+            image_filename = dest_folder + "/" + new_image_filename;
+            std::cout << "✅ Image copied to: " << dest_path << std::endl;
+        } catch (std::filesystem::filesystem_error &e) {
+            std::cerr << "[ERROR] Failed to copy image: " << e.what() << std::endl;
+        }
+    } else {
+        std::cerr << "[ERROR] Image source or destination path is empty.\n";
+    }
+}
+
+
+void character::create_character(const std::string &_path) const {
     if (!_path.empty()) {
-        const std::string file_name = name + "_" + aftername + ".json";
+        const std::string file_name = to_lower(name) + "_" + to_lower(aftername) + ".json";
         const std::string full_path = _path + "/" + file_name;
 
         std::ofstream j_file(full_path);
@@ -114,6 +134,9 @@ void character::create_character(const std::string &_path) {
             // School
             j_file << "  \"school\": " << "\"" << school_to_string(school) << "\"" << ",\n";
 
+            // Image
+            j_file << "  \"image\": \"" << image_filename << "\",\n";
+
             // Weapon
             j_file << "\"Weapon\": {\n}, \n";
 
@@ -138,24 +161,24 @@ const char *character::control_power_to_string(const int value) {
 
     switch (value) {
         case CONTROL_POWER_OUTSTANDING:
-            return_value = "Outstanding 😆";
+            return_value = "😆";
             break;
         case CONTROL_POWER_EXCELLENT:
-            return_value = "Excellent 😁";
+            return_value = "😁";
             break;
         case CONTROL_POWER_GOOD:
-            return_value = "Good 😀";
+            return_value = "😀";
             break;
         case CONTROL_POWER_NATURAL:
-            return_value = "Natural 😐";
+            return_value = "😐";
             break;
-        case CONTROL_POWER_BAD: return_value = "Bad 😣";
+        case CONTROL_POWER_BAD: return_value = "😣";
             break;
         case CONTROL_POWER_TERRABLE:
-            return_value = "Terrible 😡";
+            return_value = "😡";
             break;
         default:
-            return_value = "Unknown";
+            return_value = "";
             break;
     }
 
@@ -330,3 +353,8 @@ const char *character::school_to_string(const int value) {
     return return_value;
 }
 
+std::string character::to_lower(const std::string &str) {
+    std::string lower_str = str;
+    std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(), ::tolower);
+    return lower_str;
+}

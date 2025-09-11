@@ -69,6 +69,9 @@ enum school_names {
 };
 
 class character {
+    std::string image_filename;
+
+private:
     int id = 0;
 
     std::string name;
@@ -123,7 +126,9 @@ public:
 
     void set_school(const int _school);
 
-    void create_character(const std::string &_path);
+    void set_image(const std::string &src_image_path, const std::string &dest_folder);
+
+    void create_character(const std::string &_path) const;
 
 private:
     //Helpers
@@ -140,6 +145,8 @@ private:
     static const char *character_combat_to_string(const int value);
 
     static const char *school_to_string(const int value);
+
+    static std::string to_lower(const std::string &str);
 };
 
 #endif //CHARACTER_H
