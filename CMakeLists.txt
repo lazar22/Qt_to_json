@@ -15,12 +15,14 @@ add_executable(executable
         ${LIB_DIR}/window/window.cpp
         ${LIB_DIR}/character/character.cpp
         ${LIB_DIR}/DragImg/dragdropimg.cpp
+        ${LIB_DIR}/character_creation_tab/character_creation_tab.cpp
 )
 
 target_include_directories(executable PRIVATE
         ${LIB_DIR}/window
         ${LIB_DIR}/character
         ${LIB_DIR}/DragImg
+        ${LIB_DIR}/character_creation_tab
 )
 
 target_link_libraries(executable PRIVATE Qt6::Widgets Qt6::Core)
