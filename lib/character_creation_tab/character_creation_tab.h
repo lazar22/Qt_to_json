@@ -8,27 +8,26 @@
 #pragma once
 
 #include "dragdropimg.h"
-#include "character.h"
-
 
 #include <QPushButton>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QWidget>
 
+#include "character.h"
+
 class character_creation_tab final : public QWidget {
     Q_OBJECT
 
     int width;
     int height;
+    const int offset = 80;
 
 private:
     QString _file_path;
     QString _image_path;
 
     DragDropImgLabel _image_label;
-
-    QWidget _central;
 
     QPushButton _submitBtn;
 
@@ -130,6 +129,9 @@ protected:
             "Highlander Railroad Academy"
         };
     }
+
+signals:
+    void character_created();
 };
 
 #endif //CHARACTER_CREATION_TAB_H

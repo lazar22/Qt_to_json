@@ -17,10 +17,6 @@ app_window::app_window(QWidget *parent)
     _tabs.setParent(this);
     setCentralWidget(&_tabs);
 
-    _character_creation_tab = new character_creation_tab(this, _file_path);
-
-    _tabs.addTab(_character_creation_tab, "Character Creation");
-
     // add menus:
     auto *menu_bar = this->menuBar();
     auto *fill_menu = menu_bar->addMenu("File");
@@ -78,7 +74,38 @@ app_window::app_window(QWidget *parent)
         background-color: #446;
     }
 )");
+
+    connect(browse_action, &QAction::triggered, this, [this]() {
+        QString folder = QFileDialog::getExistingDirectory(this, "Select Character Folder");
+        if (!folder.isEmpty()) {
+            _file_path = folder;
+            save_file_path(folder);
+
+            if (_file_path_combo->findText(folder) == -1) {
+                _file_path_combo->addItem(folder);
+            }
+            _file_path_combo->setCurrentText(folder);
+
+            if (!_character_creation_tab) {
+                initialize_tabs();
+            } else {
+                _weapon_creation_tab_->refresh_character_list();
+            }
+        }
+    });
 }
+
+void app_window::initialize_tabs() {
+    _character_creation_tab = new character_creation_tab(this, _file_path);
+    _weapon_creation_tab_ = new weapon_creation_tab(this, _file_path);
+
+    _tabs.addTab(_character_creation_tab, "Character Creation");
+    _tabs.addTab(_weapon_creation_tab_, "Weapon Creation");
+
+    connect(_character_creation_tab, &character_creation_tab::character_created,
+            _weapon_creation_tab_, &weapon_creation_tab::refresh_character_list);
+}
+
 
 void app_window::save_file_path(const QString &path) {
     _settings.setValue("lastFilePath", path);
@@ -92,5 +119,7 @@ void app_window::load_path_file() {
         }
         _file_path_combo->setCurrentText(last_path);
         _file_path = last_path;
+
+        initialize_tabs();
     }
 }

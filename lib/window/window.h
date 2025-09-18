@@ -6,14 +6,15 @@
 #define WINDOW_H
 
 #include "character_creation_tab.h"
+#include "weapon_creation_tab.h"
 
 #include <QMainWindow>
 #include <QTabWidget>
 #include <QSettings>
 
 class app_window final : public QMainWindow {
-    int app_width = 950;
-    int app_height = 600;
+    int app_width = 1050;
+    int app_height = 650;
 
 private:
     QSettings _settings;
@@ -21,7 +22,9 @@ private:
     QComboBox *_file_path_combo;
 
     QTabWidget _tabs;
+
     character_creation_tab *_character_creation_tab;
+    weapon_creation_tab *_weapon_creation_tab_;
 
 private:
     void load_image(const QString &path);
@@ -31,6 +34,8 @@ private:
     void load_path_file();
 
 public:
+    void initialize_tabs();
+
     explicit app_window(QWidget *parent = nullptr);
 
     ~app_window() = default;

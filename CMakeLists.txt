@@ -16,6 +16,8 @@ add_executable(executable
         ${LIB_DIR}/character/character.cpp
         ${LIB_DIR}/DragImg/dragdropimg.cpp
         ${LIB_DIR}/character_creation_tab/character_creation_tab.cpp
+        ${LIB_DIR}/weapon_creation_tab/weapon_creation_tab.cpp
+        ${LIB_DIR}/weapon/weapon.cpp
 )
 
 target_include_directories(executable PRIVATE
@@ -23,6 +25,8 @@ target_include_directories(executable PRIVATE
         ${LIB_DIR}/character
         ${LIB_DIR}/DragImg
         ${LIB_DIR}/character_creation_tab
+        ${LIB_DIR}/weapon_creation_tab
+        ${LIB_DIR}/weapons
 )
 
 target_link_libraries(executable PRIVATE Qt6::Widgets Qt6::Core)

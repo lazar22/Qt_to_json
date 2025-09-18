@@ -3,13 +3,13 @@
 //
 
 #include "character_creation_tab.h"
+#include "character.h"
 
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QFileDialog>
 #include <QGroupBox>
 #include <QMenuBar>
-#include <QDebug>
 
 character_creation_tab::character_creation_tab(QWidget *parent, const QString _file_path_)
     : QWidget(parent), _file_path(_file_path_) {
@@ -27,7 +27,7 @@ void character_creation_tab::setup_ui() {
     // Left Image
     _image_label.setParent(this);
     _image_label.setText("Drop image here");
-    _image_label.setFixedSize(width / 2, height - 40);
+    _image_label.setFixedSize((width / 2), (height - offset));
     _image_label.setStyleSheet(R"(
     QLabel {
         background-color: #2A2E3D;
@@ -233,6 +233,7 @@ void character_creation_tab::connect_signals() {
         ch.set_image(_image_path.toStdString(), images_folder.toStdString());
 
         ch.create_character(_file_path.toStdString());
+        emit character_created();
     });
 }
 
