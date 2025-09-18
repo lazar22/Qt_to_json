@@ -4,6 +4,7 @@
 
 #include "weapon_creation_tab.h"
 
+#include <QCoreApplication>
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QFileDialog>
@@ -53,6 +54,50 @@ void weapon_creation_tab::setup_ui() {
     connect_info->addRow("Weapon Name:", &_weapon_name_input);
     right_panel->addLayout(connect_info);
 
+    auto *boost_group = new QGroupBox(_group_name);
+    boost_group->setStyleSheet("QGroupBox { font-weight: bold; }");
+    auto *boost_form = new QFormLayout();
+
+    boost_form->addRow("HP:", &_hp_boost_input);
+    boost_form->addRow("ATK:", &_atk_boost_input);
+    boost_form->addRow("HEALING:", &_healing_boost_input);
+
+    boost_group->setLayout(boost_form);
+    right_panel->addWidget(boost_group);
+
+    // ADD ICONS
+    auto *equipment_group = new QGroupBox("Equipment");
+    equipment_group->setStyleSheet("QGroupBox { font-weight: bold; }");
+    auto *equipment_layout = new QHBoxLayout();
+
+    _add_equipment_dropdown(&_equipment_one_combo, equipment_layout, "Equipment 1");
+    _add_equipment_dropdown(&_equipment_two_combo, equipment_layout, "Equipment 2");
+    _add_equipment_dropdown(&_equipment_three_combo, equipment_layout, "Equipment 3");
+
+    _unique_equipment_image.setParent(this);
+    _unique_equipment_image.setFixedSize(icon_size, icon_size);
+    _unique_equipment_image.setAlignment(Qt::AlignCenter);
+    _unique_equipment_image.setStyleSheet(R"(
+    QLabel {
+        background-color: #2A2E3D;
+        border: 2px dashed #3A3F51;
+        border-radius: 10px;
+        color: #888;
+        font-size: 12px;
+    }
+)");
+    _unique_equipment_image.setText("Drop image here");
+
+    equipment_layout->addWidget(&_unique_equipment_image);
+    equipment_group->setLayout(equipment_layout);
+    right_panel->addWidget(equipment_group);
+
+
+    _submit_btn.setParent(this);
+    _submit_btn.setText("Submit");
+    right_panel->addStretch();
+    right_panel->addWidget(&_submit_btn, 0, Qt::AlignCenter);
+
     main_layout->addLayout(right_panel);
     this->setLayout(main_layout);
 
@@ -61,7 +106,30 @@ void weapon_creation_tab::setup_ui() {
 }
 
 void weapon_creation_tab::connect_signals() {
+    connect(&_unique_equipment_image, &DragDropImgLabel::image_dropped, this, [this](const QString &path) {
+        QPixmap pix(path);
+        _unique_equipment_image.setPixmap(pix.scaled(
+            _unique_equipment_image.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        _unique_equipment_image.setText("");
+        _unique_equipment_path = path;
+    });
+
     // when submit btn press
+    connect(&_submit_btn, &QPushButton::clicked, this, [this]() {
+        qDebug() << "Submit";
+
+        qDebug() << _character_selector.currentData().toString();
+        qDebug() << _weapon_name_input.text();
+
+        const QString selected_one = _equipment_one_combo.currentData().toString();
+        const QString selected_two = _equipment_two_combo.currentData().toString();
+        const QString selected_three = _equipment_three_combo.currentData().toString();
+
+
+        qDebug() << selected_one;
+        qDebug() << selected_two;
+        qDebug() << selected_three;
+    });
     // QString selected_file = _character_selector.currentData().toString();
     // full_path = _file_path + "/" + selected_file;
 }
@@ -107,6 +175,27 @@ void weapon_creation_tab::load_character_list(const QString &path) {
         }
 
         _character_selector.setEnabled(true);
+    }
+}
+
+void weapon_creation_tab::_add_equipment_dropdown(QComboBox *combo, QHBoxLayout *layout, const QString &tooltip) {
+    combo->setMinimumWidth(64);
+    combo->setIconSize(QSize(48, 48));
+    combo->setToolTip(tooltip);
+
+    layout->addWidget(combo);
+
+    // Load icons
+    const QString icon_dir = QCoreApplication::applicationDirPath() + "/character_upgrade_equipment";
+    const QDir dir(icon_dir);
+    const QStringList filters = {"*.png", "*.jpg", "*.jpeg"};
+    QFileInfoList icons = dir.entryInfoList(filters, QDir::Files);
+
+    for (const QFileInfo &icon: icons) {
+        QIcon icon_img(icon.absoluteFilePath());
+        QString name = icon.baseName(); // name without extension
+        combo->addItem(icon_img, "", name); // Show only icon, use name as data
+        combo->setItemData(combo->count() - 1, name, Qt::ToolTipRole);
     }
 }
 

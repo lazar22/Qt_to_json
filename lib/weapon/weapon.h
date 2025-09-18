@@ -4,40 +4,30 @@
 
 #ifndef WEAPON_H
 #define WEAPON_H
+
 #include <string>
-
-enum item_one_list {
-    HAT = 0,
-    BOOTS,
-    TALISMAN
-};
-
-enum item_two_list {
-    GLOVES = 0,
-    HAIRPIN,
-    CLOCK
-};
-
-enum unique_item {
-    NONE = 0,
-};
 
 class weapon {
     std::string connect_character_name;
     std::string name;
 
-    struct upgrade_items {
-        int item_one;
-        int item_two;
-        int item_three;
-        int unique_item = NONE;
-    };
+    struct upgrade_equipment {
+        std::string equipment_one;
+        std::string equipment_two;
+        std::string equipment_three;
+        std::string unique_equipment = "";
+    } equipment;
 
     struct bonus_stats {
         int atk;
         int hp;
         int healing;
     };
+
+public:
+    weapon() = default;
+
+    ~weapon() = default;
 };
 
 #endif //WEAPON_H

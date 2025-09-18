@@ -26,7 +26,13 @@ target_include_directories(executable PRIVATE
         ${LIB_DIR}/DragImg
         ${LIB_DIR}/character_creation_tab
         ${LIB_DIR}/weapon_creation_tab
-        ${LIB_DIR}/weapons
+        ${LIB_DIR}/weapon
 )
 
 target_link_libraries(executable PRIVATE Qt6::Widgets Qt6::Core)
+
+add_custom_command(TARGET executable POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/images/character_upgrade_equipment
+        $<TARGET_FILE_DIR:executable>/character_upgrade_equipment
+)
