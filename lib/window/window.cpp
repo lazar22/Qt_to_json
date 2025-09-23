@@ -11,7 +11,7 @@
 
 app_window::app_window(QWidget *parent)
     : QMainWindow(parent), _settings("Blue Archive", "window") {
-    setWindowTitle("Blue Archive Character Creator");
+    setWindowTitle("Character Creator");
     setFixedSize(app_width, app_height);
 
     _tabs.setParent(this);

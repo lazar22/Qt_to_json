@@ -83,6 +83,8 @@ private:
 
     void load_image(const QString &path);
 
+    static void create_file(const QString &path);
+
 protected:
     static QStringList getCharacterCombatOptions() {
         return {"Striker", "Special"};

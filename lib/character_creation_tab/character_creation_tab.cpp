@@ -3,6 +3,7 @@
 //
 
 #include "character_creation_tab.h"
+#include "file_names.h"
 #include "character.h"
 
 #include <QVBoxLayout>
@@ -224,15 +225,18 @@ void character_creation_tab::connect_signals() {
 
         ch.set_school(_school_combo.currentIndex());
 
-        const QString images_folder = _file_path + "/Images";
-        const QDir dir(images_folder);
-        if (!dir.exists()) {
-            dir.mkpath(".");
-        }
+        const QString images_folder = _file_path + IMAGE_FOLDER;
+        const QString ch_img_folder = images_folder + CHARACTER_FOLDER;
 
-        ch.set_image(_image_path.toStdString(), images_folder.toStdString());
+        const QString character_folder = _file_path + CHARACTER_FOLDER;
 
-        ch.create_character(_file_path.toStdString());
+        create_file(images_folder);
+        create_file(ch_img_folder);
+        create_file(character_folder);
+
+        ch.set_image(_image_path.toStdString(), ch_img_folder.toStdString());
+
+        ch.create_character(character_folder.toStdString());
         emit character_created();
     });
 }
@@ -250,6 +254,13 @@ void character_creation_tab::create_stats_input_fields() {
     for (auto *input: inputs) {
         input->setParent(this);
         input->setAlignment(Qt::AlignRight);
+    }
+}
+
+void character_creation_tab::create_file(const QString &path) {
+    const QDir dir(path);
+    if (!dir.exists()) {
+        dir.mkpath(".");
     }
 }
 

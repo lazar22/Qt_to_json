@@ -3,6 +3,7 @@
 //
 
 #include "weapon_creation_tab.h"
+#include "file_names.h"
 
 #include <QCoreApplication>
 #include <QVBoxLayout>
@@ -101,7 +102,7 @@ void weapon_creation_tab::setup_ui() {
     main_layout->addLayout(right_panel);
     this->setLayout(main_layout);
 
-    QString character_folder_path = _file_path + "/";
+    const QString character_folder_path = _file_path + CHARACTER_FOLDER + "/";
     load_character_list(character_folder_path);
 }
 

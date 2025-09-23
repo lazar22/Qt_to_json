@@ -3,6 +3,7 @@ project(qt_to_json)
 
 set(CMAKE_CXX_STANDARD 17)
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 find_package(Qt6 COMPONENTS Widgets Core REQUIRED)
 
@@ -27,6 +28,7 @@ target_include_directories(executable PRIVATE
         ${LIB_DIR}/character_creation_tab
         ${LIB_DIR}/weapon_creation_tab
         ${LIB_DIR}/weapon
+        ${INC_DIR}/
 )
 
 target_link_libraries(executable PRIVATE Qt6::Widgets Qt6::Core)
