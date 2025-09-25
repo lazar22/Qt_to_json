@@ -138,10 +138,26 @@ void weapon_creation_tab::connect_signals() {
         weapon wp;
         wp.set_weapon_name(selected_file.toStdString(), _weapon_name_input.text().toStdString());
         wp.set_boost_stats(stats_hp_boost, stats_healing, stats_atk_boost);
+
+        QString unique_equipment_dest_path;
+        if (!_unique_equipment_path.isEmpty()) {
+            create_file(equipment_image_folder);
+            QFileInfo ueInfo(_unique_equipment_path);
+            const QString destPath = equipment_image_folder + "/" + ueInfo.fileName();
+            if (QFile::exists(destPath)) {
+                QFile::remove(destPath);
+            }
+            if (QFile::copy(_unique_equipment_path, destPath)) {
+                unique_equipment_dest_path = destPath;
+            }
+        }
+
         wp.set_upgrade_equipment(
             selected_one.toStdString(),
             selected_two.toStdString(),
-            selected_three.toStdString());
+            selected_three.toStdString(),
+            unique_equipment_dest_path.toStdString());
+
         wp.set_weapon_image(_image_path.toStdString(), wp_image_folder.toStdString());
 
         wp.create_weapon(full_path.toStdString());
