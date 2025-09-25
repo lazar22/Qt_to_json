@@ -3,9 +3,9 @@
 //
 
 #include "character.h"
+#include "string_handler.h"
 
 #include <filesystem>
-#include <algorithm>
 #include <iostream>
 #include <ostream>
 #include <fstream>
@@ -65,7 +65,8 @@ void character::set_school(const int _school) {
 void character::set_image(const std::string &src_image_path, const std::string &dest_folder) {
     std::cout << "Copying image from: " << src_image_path << " to: " << dest_folder << std::endl;
     if (!src_image_path.empty() || !dest_folder.empty()) {
-        const std::string new_image_filename = to_lower(name) + "_" + to_lower(aftername) + ".png";
+        const std::string new_image_filename = string_handler::to_lower(name) + "_" +
+                                               string_handler::to_lower(aftername) + ".png";
         const std::filesystem::path dest_path = std::filesystem::path(dest_folder) / new_image_filename;
 
         try {
@@ -83,7 +84,8 @@ void character::set_image(const std::string &src_image_path, const std::string &
 
 void character::create_character(const std::string &_path) const {
     if (!_path.empty()) {
-        const std::string file_name = to_lower(name) + "_" + to_lower(aftername) + ".json";
+        const std::string file_name = string_handler::to_lower(name) + "_" + string_handler::to_lower(aftername) +
+                                      ".json";
         const std::string full_path = _path + "/" + file_name;
 
         std::ofstream j_file(full_path);
@@ -351,10 +353,4 @@ const char *character::school_to_string(const int value) {
     }
 
     return return_value;
-}
-
-std::string character::to_lower(const std::string &str) {
-    std::string lower_str = str;
-    std::transform(lower_str.begin(), lower_str.end(), lower_str.begin(), ::tolower);
-    return lower_str;
 }

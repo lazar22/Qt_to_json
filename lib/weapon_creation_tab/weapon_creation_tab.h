@@ -31,6 +31,7 @@ private:
 
     int icon_size = 64;
 
+    QString full_path;
     QString _file_path;
     QString _image_path;
     QString _unique_equipment_path;
@@ -68,6 +69,8 @@ private:
     static void _add_equipment_dropdown(QComboBox *combo, QHBoxLayout *layout, const QString &tooltip);
 
     void load_image(const QString &path);
+
+    static void create_file(const QString &path);
 
 public slots:
     void refresh_character_list();

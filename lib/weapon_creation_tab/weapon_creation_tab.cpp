@@ -119,20 +119,33 @@ void weapon_creation_tab::connect_signals() {
     connect(&_submit_btn, &QPushButton::clicked, this, [this]() {
         qDebug() << "Submit";
 
-        qDebug() << _character_selector.currentData().toString();
-        qDebug() << _weapon_name_input.text();
+        const QString selected_file = _character_selector.currentData().toString();
+        full_path = _file_path + CHARACTER_FOLDER + "/" + selected_file;
+
+        const int stats_hp_boost = _hp_boost_input.text().toInt();
+        const int stats_atk_boost = _atk_boost_input.text().toInt();
+        const int stats_healing = _healing_boost_input.text().toInt();
 
         const QString selected_one = _equipment_one_combo.currentData().toString();
         const QString selected_two = _equipment_two_combo.currentData().toString();
         const QString selected_three = _equipment_three_combo.currentData().toString();
 
+        const QString wp_image_folder = _file_path + IMAGE_FOLDER + WEAPON_FOLDER;
+        const QString equipment_image_folder = _file_path + IMAGE_FOLDER + EQUIPMENT_FOLDER;
 
-        qDebug() << selected_one;
-        qDebug() << selected_two;
-        qDebug() << selected_three;
+        create_file(wp_image_folder);
+
+        weapon wp;
+        wp.set_weapon_name(selected_file.toStdString(), _weapon_name_input.text().toStdString());
+        wp.set_boost_stats(stats_hp_boost, stats_healing, stats_atk_boost);
+        wp.set_upgrade_equipment(
+            selected_one.toStdString(),
+            selected_two.toStdString(),
+            selected_three.toStdString());
+        wp.set_weapon_image(_image_path.toStdString(), wp_image_folder.toStdString());
+
+        wp.create_weapon(full_path.toStdString());
     });
-    // QString selected_file = _character_selector.currentData().toString();
-    // full_path = _file_path + "/" + selected_file;
 }
 
 void weapon_creation_tab::load_character_list(const QString &path) {
@@ -210,6 +223,15 @@ void weapon_creation_tab::load_image(const QString &path) {
     }
 }
 
-void weapon_creation_tab::refresh_character_list() {
-    load_character_list(_file_path);
+void weapon_creation_tab::create_file(const QString &path) {
+    const QDir dir(path);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
 }
+
+void weapon_creation_tab::refresh_character_list() {
+    const QString character_folder_path = _file_path + CHARACTER_FOLDER + "/";
+    load_character_list(character_folder_path);
+}
+

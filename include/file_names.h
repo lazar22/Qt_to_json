@@ -8,5 +8,6 @@
 #define IMAGE_FOLDER "/image"
 #define CHARACTER_FOLDER "/characters"
 #define WEAPON_FOLDER "/weapons"
+#define EQUIPMENT_FOLDER "/equipment"
 
 #endif //FILE_NAMES_H
