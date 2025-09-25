@@ -10,7 +10,7 @@
 #include <QDebug>
 
 app_window::app_window(QWidget *parent)
-    : QMainWindow(parent), _settings("Blue Archive", "window") {
+    : QMainWindow(parent), _settings() {
     setWindowTitle("Character Creator");
     setFixedSize(app_width, app_height);
 
@@ -120,6 +120,8 @@ void app_window::load_path_file() {
         _file_path_combo->setCurrentText(last_path);
         _file_path = last_path;
 
+        initialize_tabs();
+    } else {
         initialize_tabs();
     }
 }
