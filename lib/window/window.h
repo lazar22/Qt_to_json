@@ -6,11 +6,13 @@
 #define WINDOW_H
 
 #include "character_creation_tab.h"
+#include "ability_creation_tab.h"
 #include "weapon_creation_tab.h"
 
 #include <QMainWindow>
 #include <QTabWidget>
 #include <QSettings>
+
 
 class app_window final : public QMainWindow {
     int app_width = 1050;
@@ -25,6 +27,7 @@ private:
 
     character_creation_tab *_character_creation_tab;
     weapon_creation_tab *_weapon_creation_tab_;
+    ability_creation_tab *_ability_creation_tab;
 
 private:
     void load_image(const QString &path);
