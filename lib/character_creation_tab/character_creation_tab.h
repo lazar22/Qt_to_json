@@ -16,7 +16,8 @@
 
 #include "character.h"
 
-class character_creation_tab final : public QWidget {
+class character_creation_tab final : public QWidget
+{
     Q_OBJECT
 
     int width;
@@ -70,7 +71,7 @@ private:
     QComboBox _school_combo;
 
 public:
-    explicit character_creation_tab(QWidget *parent = nullptr, const QString _file_path_ = "");
+    explicit character_creation_tab(QWidget* parent = nullptr, const QString _file_path_ = "");
 
     ~character_creation_tab() override = default;
 
@@ -81,41 +82,43 @@ private:
 
     void create_stats_input_fields();
 
-    void load_image(const QString &path);
-
-    static void create_file(const QString &path);
-
 protected:
-    static QStringList getCharacterCombatOptions() {
+    static QStringList getCharacterCombatOptions()
+    {
         return {"Striker", "Special"};
     }
 
-    static QStringList getStarsOptions() {
+    static QStringList getStarsOptions()
+    {
         return {"★", "★★", "★★★"};
     }
 
-    static QStringList getCharacterTypeOptions() {
+    static QStringList getCharacterTypeOptions()
+    {
         return {
             "Tank", "Attacker", "Healer",
             "Support", "Tactical Support"
         };
     }
 
-    static QStringList getDefenseTypeOptions() {
+    static QStringList getDefenseTypeOptions()
+    {
         return {
             "Normal", "Light", "Heavy",
             "Special", "Elastic", "Structure"
         };
     }
 
-    static QStringList get_attack_type_options() {
+    static QStringList get_attack_type_options()
+    {
         return {
             "Normal", "Explosion", "Penetration",
             "Mystic", "Sonic", "Siege"
         };
     }
 
-    static QStringList getSchoolOptions() {
+    static QStringList getSchoolOptions()
+    {
         return {
             "Abydos High School",
             "Gehenna Academy",

@@ -8,20 +8,18 @@
 #pragma once
 
 #include "dragdropimg.h"
-#include "weapon.h"
 
-#include <QDir>
-#include <QJsonDocument>
 #include <QJsonObject>
 #include <QBoxLayout>
-#include <QFile>
+#include <QDir>
 
 #include <QPushButton>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QWidget>
 
-class weapon_creation_tab final : public QWidget {
+class weapon_creation_tab final : public QWidget
+{
     Q_OBJECT
 
 private:
@@ -57,20 +55,16 @@ private:
     DragDropImgLabel _unique_equipment_image;
 
 public:
-    explicit weapon_creation_tab(QWidget *parent = nullptr, const QString _file_path_ = "");
+    explicit weapon_creation_tab(QWidget* parent = nullptr, const QString _file_path_ = "");
 
 private:
     void setup_ui();
 
     void connect_signals();
 
-    void load_character_list(const QString &path);
+    void load_character_list(const QString& path);
 
-    static void _add_equipment_dropdown(QComboBox *combo, QHBoxLayout *layout, const QString &tooltip);
-
-    void load_image(const QString &path);
-
-    static void create_file(const QString &path);
+    static void _add_equipment_dropdown(QComboBox* combo, QHBoxLayout* layout, const QString& tooltip);
 
 public slots:
     void refresh_character_list();
