@@ -3,8 +3,9 @@
 //
 
 #include "weapon_creation_tab.h"
-#include <image_handler.h>
+#include "image_handler.h"
 #include "file_names.h"
+#include "json_utils.h"
 #include "weapon.h"
 
 #include <QCoreApplication>
@@ -102,8 +103,7 @@ void weapon_creation_tab::setup_ui()
     main_layout->addLayout(right_panel);
     this->setLayout(main_layout);
 
-    const QString character_folder_path = _file_path + CHARACTER_FOLDER + "/";
-    load_character_list(character_folder_path);
+    refresh_character_list();
 }
 
 void weapon_creation_tab::connect_signals()
@@ -177,56 +177,6 @@ void weapon_creation_tab::connect_signals()
     });
 }
 
-void weapon_creation_tab::load_character_list(const QString& path)
-{
-    _character_selector.clear();
-
-    const QDir dir(path);
-    QStringList filters;
-    filters << "*.json";
-    QFileInfoList files = dir.entryInfoList(filters, QDir::Files, QDir::Name);
-
-    if (files.isEmpty())
-    {
-        _character_selector.addItem("No characters found");
-        _character_selector.setEnabled(false);
-    }
-
-    for (const QFileInfo& file_info : files)
-    {
-        QFile file(file_info.absoluteFilePath());
-
-        if (!file.open(QIODevice::ReadOnly))
-        {
-            continue;
-        }
-
-        QByteArray data = file.readAll();
-        file.close();
-
-        QJsonParseError prase_error;
-        QJsonDocument doc = QJsonDocument::fromJson(data, &prase_error);
-
-        if (prase_error.error != QJsonParseError::NoError || !doc.isObject())
-        {
-            continue;
-        }
-
-        QJsonObject obj = doc.object();
-        QString name = obj.value("name").toString();
-        QString aftername = obj.value("aftername").toString();
-
-        if (!name.isEmpty() && !aftername.isEmpty())
-        {
-            QString display_name = QString("%1 %2").arg(name).arg(aftername);
-            QString key = file_info.fileName();
-            _character_selector.addItem(display_name, key);
-        }
-
-        _character_selector.setEnabled(true);
-    }
-}
-
 void weapon_creation_tab::_add_equipment_dropdown(QComboBox* combo, QHBoxLayout* layout, const QString& tooltip)
 {
     combo->setMinimumWidth(64);
@@ -253,6 +203,6 @@ void weapon_creation_tab::_add_equipment_dropdown(QComboBox* combo, QHBoxLayout*
 void weapon_creation_tab::refresh_character_list()
 {
     const QString character_folder_path = _file_path + CHARACTER_FOLDER + "/";
-    load_character_list(character_folder_path);
+    json_utils::populate_character_combo(&_character_selector, character_folder_path);
 }
 

@@ -17,6 +17,7 @@ add_executable(executable
         ${LIB_DIR}/character/character.cpp
         ${LIB_DIR}/DragImg/dragdropimg.cpp
         ${LIB_DIR}/character_creation_tab/character_creation_tab.cpp
+        ${LIB_DIR}/event_character_creation_tab/event_character_creation_tab.cpp
         ${LIB_DIR}/weapon_creation_tab/weapon_creation_tab.cpp
         ${LIB_DIR}/weapon/weapon.cpp
         ${LIB_DIR}/ability_creation_tab/ability_creation_tab.cpp
@@ -28,6 +29,7 @@ target_include_directories(executable PRIVATE
         ${LIB_DIR}/character
         ${LIB_DIR}/DragImg
         ${LIB_DIR}/character_creation_tab
+        ${LIB_DIR}/event_character_creation_tab
         ${LIB_DIR}/weapon_creation_tab
         ${LIB_DIR}/weapon
         ${LIB_DIR}/ability_creation_tab

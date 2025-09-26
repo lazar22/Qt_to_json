@@ -108,15 +108,22 @@ void app_window::initialize_tabs()
     _weapon_creation_tab_ = new weapon_creation_tab(this, _file_path);
     _ability_creation_tab = new ability_creation_tab(this, _file_path);
 
+    _event_character_creation_tab = new event_character_creation_tab(this, _file_path);
+
     _tabs.addTab(_character_creation_tab, "Character Creation");
     _tabs.addTab(_weapon_creation_tab_, "Weapon Creation");
     _tabs.addTab(_ability_creation_tab, "Ability Creation");
+
+    _tabs.addTab(_event_character_creation_tab, "Event Character Creation");
 
     connect(_character_creation_tab, &character_creation_tab::character_created,
             _weapon_creation_tab_, &weapon_creation_tab::refresh_character_list);
 
     connect(_character_creation_tab, &character_creation_tab::character_created,
             _ability_creation_tab, &ability_creation_tab::refresh_character_list);
+
+    connect(_character_creation_tab, &character_creation_tab::character_created,
+            _event_character_creation_tab, &event_character_creation_tab::refresh_character_list);
 }
 
 

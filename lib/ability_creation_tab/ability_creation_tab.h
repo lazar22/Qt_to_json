@@ -67,8 +67,6 @@ private:
 
     void connect_signals();
 
-    void load_character_list(const QString& path);
-
     void setup_skills_gui(QVBoxLayout* main_layout);
 
 public:

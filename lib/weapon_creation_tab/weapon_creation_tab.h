@@ -62,8 +62,6 @@ private:
 
     void connect_signals();
 
-    void load_character_list(const QString& path);
-
     static void _add_equipment_dropdown(QComboBox* combo, QHBoxLayout* layout, const QString& tooltip);
 
 public slots:

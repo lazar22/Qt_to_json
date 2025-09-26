@@ -4,6 +4,10 @@
 #include <fstream>
 #include <sstream>
 
+#include <QJsonObject>
+#include <QComboBox>
+#include <QDir>
+
 namespace json_utils
 {
     inline size_t find_matching_closing_brace(const std::string& s, size_t open_pos)
@@ -141,5 +145,56 @@ namespace json_utils
             }
         }
         return out;
+    }
+
+    inline void populate_character_combo(QComboBox* combo, const QString& dirPath)
+    {
+        if (!combo) return;
+
+        combo->clear();
+
+        const QDir dir(dirPath);
+        const QStringList filters = {"*.json"};
+        const QFileInfoList files = dir.entryInfoList(filters, QDir::Files, QDir::Name);
+
+        if (files.isEmpty())
+        {
+            combo->addItem("No characters found");
+            combo->setEnabled(false);
+            return;
+        }
+
+        for (const QFileInfo& file_info : files)
+        {
+            QFile file(file_info.absoluteFilePath());
+            if (!file.open(QIODevice::ReadOnly))
+            {
+                continue;
+            }
+
+            const QByteArray data = file.readAll();
+            file.close();
+
+            QJsonParseError parse_error;
+            const QJsonDocument doc = QJsonDocument::fromJson(data, &parse_error);
+
+            if (parse_error.error != QJsonParseError::NoError || !doc.isObject())
+            {
+                continue;
+            }
+
+            const QJsonObject obj = doc.object();
+            const QString name = obj.value("name").toString();
+            const QString aftername = obj.value("aftername").toString();
+
+            if (!name.isEmpty() && !aftername.isEmpty())
+            {
+                const QString display_name = QString("%1 %2").arg(name, aftername);
+                const QString key = file_info.fileName();
+                combo->addItem(display_name, key);
+            }
+        }
+
+        combo->setEnabled(combo->count() > 0);
     }
 }
