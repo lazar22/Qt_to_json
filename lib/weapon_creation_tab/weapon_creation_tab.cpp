@@ -3,7 +3,9 @@
 //
 
 #include "weapon_creation_tab.h"
+#include <image_handler.h>
 #include "file_names.h"
+#include "weapon.h"
 
 #include <QCoreApplication>
 #include <QVBoxLayout>
@@ -11,8 +13,9 @@
 #include <QFileDialog>
 #include <QGroupBox>
 
-weapon_creation_tab::weapon_creation_tab(QWidget *parent, const QString _file_path_)
-    : QWidget(parent), _file_path(_file_path_) {
+weapon_creation_tab::weapon_creation_tab(QWidget* parent, const QString _file_path_)
+    : QWidget(parent), _file_path(_file_path_)
+{
     width = parent->width();
     height = parent->height();
 
@@ -21,8 +24,9 @@ weapon_creation_tab::weapon_creation_tab(QWidget *parent, const QString _file_pa
 }
 
 
-void weapon_creation_tab::setup_ui() {
-    auto *main_layout = new QHBoxLayout();
+void weapon_creation_tab::setup_ui()
+{
+    auto* main_layout = new QHBoxLayout();
 
     _image_label.setParent(this);
     _image_label.setText("Drop image here");
@@ -39,25 +43,21 @@ void weapon_creation_tab::setup_ui() {
     _image_label.setAlignment(Qt::AlignCenter);
     main_layout->addWidget(&_image_label);
 
-    connect(&_image_label, &DragDropImgLabel::image_dropped, this, [this](const QString &path) {
-        load_image(path);
-    });
-
-    auto *right_panel = new QVBoxLayout();
+    auto* right_panel = new QVBoxLayout();
 
     _character_selector.setParent(this);
     _character_selector.setMinimumWidth(200);
     _character_selector.setStyleSheet("QComboBox { font-size: 14px; }");
     _weapon_name_input.setParent(this);
 
-    auto *connect_info = new QFormLayout();
+    auto* connect_info = new QFormLayout();
     connect_info->addRow("Select Character:", &_character_selector);
     connect_info->addRow("Weapon Name:", &_weapon_name_input);
     right_panel->addLayout(connect_info);
 
-    auto *boost_group = new QGroupBox(_group_name);
+    auto* boost_group = new QGroupBox(_group_name);
     boost_group->setStyleSheet("QGroupBox { font-weight: bold; }");
-    auto *boost_form = new QFormLayout();
+    auto* boost_form = new QFormLayout();
 
     boost_form->addRow("HP:", &_hp_boost_input);
     boost_form->addRow("ATK:", &_atk_boost_input);
@@ -67,9 +67,9 @@ void weapon_creation_tab::setup_ui() {
     right_panel->addWidget(boost_group);
 
     // ADD ICONS
-    auto *equipment_group = new QGroupBox("Equipment");
+    auto* equipment_group = new QGroupBox("Equipment");
     equipment_group->setStyleSheet("QGroupBox { font-weight: bold; }");
-    auto *equipment_layout = new QHBoxLayout();
+    auto* equipment_layout = new QHBoxLayout();
 
     _add_equipment_dropdown(&_equipment_one_combo, equipment_layout, "Equipment 1");
     _add_equipment_dropdown(&_equipment_two_combo, equipment_layout, "Equipment 2");
@@ -106,17 +106,27 @@ void weapon_creation_tab::setup_ui() {
     load_character_list(character_folder_path);
 }
 
-void weapon_creation_tab::connect_signals() {
-    connect(&_unique_equipment_image, &DragDropImgLabel::image_dropped, this, [this](const QString &path) {
-        QPixmap pix(path);
-        _unique_equipment_image.setPixmap(pix.scaled(
-            _unique_equipment_image.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        _unique_equipment_image.setText("");
-        _unique_equipment_path = path;
+void weapon_creation_tab::connect_signals()
+{
+    connect(&_image_label, &DragDropImgLabel::image_dropped, this, [this](const QString& path)
+    {
+        if (image_handler::load_image(&_image_label, path))
+        {
+            _image_path = path;
+        }
+    });
+
+    connect(&_unique_equipment_image, &DragDropImgLabel::image_dropped, this, [this](const QString& path)
+    {
+        if (image_handler::load_image(&_unique_equipment_image, path))
+        {
+            _unique_equipment_path = path;
+        }
     });
 
     // when submit btn press
-    connect(&_submit_btn, &QPushButton::clicked, this, [this]() {
+    connect(&_submit_btn, &QPushButton::clicked, this, [this]()
+    {
         qDebug() << "Submit";
 
         const QString selected_file = _character_selector.currentData().toString();
@@ -133,22 +143,25 @@ void weapon_creation_tab::connect_signals() {
         const QString wp_image_folder = _file_path + IMAGE_FOLDER + WEAPON_FOLDER;
         const QString equipment_image_folder = _file_path + IMAGE_FOLDER + EQUIPMENT_FOLDER;
 
-        create_file(wp_image_folder);
+        image_handler::create_file(wp_image_folder);
 
         weapon wp;
         wp.set_weapon_name(selected_file.toStdString(), _weapon_name_input.text().toStdString());
         wp.set_boost_stats(stats_hp_boost, stats_healing, stats_atk_boost);
 
         QString unique_equipment_dest_path;
-        if (!_unique_equipment_path.isEmpty()) {
-            create_file(equipment_image_folder);
-            QFileInfo ueInfo(_unique_equipment_path);
-            const QString destPath = equipment_image_folder + "/" + ueInfo.fileName();
-            if (QFile::exists(destPath)) {
-                QFile::remove(destPath);
+        if (!_unique_equipment_path.isEmpty())
+        {
+            image_handler::create_file(equipment_image_folder);
+            const QFileInfo use_info(_unique_equipment_path);
+            const QString dest_path = equipment_image_folder + "/" + use_info.fileName();
+            if (QFile::exists(dest_path))
+            {
+                QFile::remove(dest_path);
             }
-            if (QFile::copy(_unique_equipment_path, destPath)) {
-                unique_equipment_dest_path = destPath;
+            if (QFile::copy(_unique_equipment_path, dest_path))
+            {
+                unique_equipment_dest_path = dest_path;
             }
         }
 
@@ -164,7 +177,8 @@ void weapon_creation_tab::connect_signals() {
     });
 }
 
-void weapon_creation_tab::load_character_list(const QString &path) {
+void weapon_creation_tab::load_character_list(const QString& path)
+{
     _character_selector.clear();
 
     const QDir dir(path);
@@ -172,15 +186,18 @@ void weapon_creation_tab::load_character_list(const QString &path) {
     filters << "*.json";
     QFileInfoList files = dir.entryInfoList(filters, QDir::Files, QDir::Name);
 
-    if (files.isEmpty()) {
+    if (files.isEmpty())
+    {
         _character_selector.addItem("No characters found");
         _character_selector.setEnabled(false);
     }
 
-    for (const QFileInfo &file_info: files) {
+    for (const QFileInfo& file_info : files)
+    {
         QFile file(file_info.absoluteFilePath());
 
-        if (!file.open(QIODevice::ReadOnly)) {
+        if (!file.open(QIODevice::ReadOnly))
+        {
             continue;
         }
 
@@ -190,7 +207,8 @@ void weapon_creation_tab::load_character_list(const QString &path) {
         QJsonParseError prase_error;
         QJsonDocument doc = QJsonDocument::fromJson(data, &prase_error);
 
-        if (prase_error.error != QJsonParseError::NoError || !doc.isObject()) {
+        if (prase_error.error != QJsonParseError::NoError || !doc.isObject())
+        {
             continue;
         }
 
@@ -198,7 +216,8 @@ void weapon_creation_tab::load_character_list(const QString &path) {
         QString name = obj.value("name").toString();
         QString aftername = obj.value("aftername").toString();
 
-        if (!name.isEmpty() && !aftername.isEmpty()) {
+        if (!name.isEmpty() && !aftername.isEmpty())
+        {
             QString display_name = QString("%1 %2").arg(name).arg(aftername);
             QString key = file_info.fileName();
             _character_selector.addItem(display_name, key);
@@ -208,7 +227,8 @@ void weapon_creation_tab::load_character_list(const QString &path) {
     }
 }
 
-void weapon_creation_tab::_add_equipment_dropdown(QComboBox *combo, QHBoxLayout *layout, const QString &tooltip) {
+void weapon_creation_tab::_add_equipment_dropdown(QComboBox* combo, QHBoxLayout* layout, const QString& tooltip)
+{
     combo->setMinimumWidth(64);
     combo->setIconSize(QSize(48, 48));
     combo->setToolTip(tooltip);
@@ -221,7 +241,8 @@ void weapon_creation_tab::_add_equipment_dropdown(QComboBox *combo, QHBoxLayout 
     const QStringList filters = {"*.png", "*.jpg", "*.jpeg"};
     QFileInfoList icons = dir.entryInfoList(filters, QDir::Files);
 
-    for (const QFileInfo &icon: icons) {
+    for (const QFileInfo& icon : icons)
+    {
         QIcon icon_img(icon.absoluteFilePath());
         QString name = icon.baseName(); // name without extension
         combo->addItem(icon_img, "", name); // Show only icon, use name as data
@@ -229,24 +250,8 @@ void weapon_creation_tab::_add_equipment_dropdown(QComboBox *combo, QHBoxLayout 
     }
 }
 
-void weapon_creation_tab::load_image(const QString &path) {
-    QPixmap pix(path);
-    if (!pix.isNull()) {
-        _image_label.setText("");
-        _image_label.setPixmap(pix.scaled(
-            _image_label.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        _image_path = path;
-    }
-}
-
-void weapon_creation_tab::create_file(const QString &path) {
-    const QDir dir(path);
-    if (!dir.exists()) {
-        dir.mkpath(".");
-    }
-}
-
-void weapon_creation_tab::refresh_character_list() {
+void weapon_creation_tab::refresh_character_list()
+{
     const QString character_folder_path = _file_path + CHARACTER_FOLDER + "/";
     load_character_list(character_folder_path);
 }

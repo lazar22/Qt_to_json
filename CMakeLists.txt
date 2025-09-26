@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(qt_to_json)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -19,6 +19,8 @@ add_executable(executable
         ${LIB_DIR}/character_creation_tab/character_creation_tab.cpp
         ${LIB_DIR}/weapon_creation_tab/weapon_creation_tab.cpp
         ${LIB_DIR}/weapon/weapon.cpp
+        ${LIB_DIR}/ability_creation_tab/ability_creation_tab.cpp
+        ${LIB_DIR}/ability/ability.cpp
 )
 
 target_include_directories(executable PRIVATE
@@ -28,6 +30,8 @@ target_include_directories(executable PRIVATE
         ${LIB_DIR}/character_creation_tab
         ${LIB_DIR}/weapon_creation_tab
         ${LIB_DIR}/weapon
+        ${LIB_DIR}/ability_creation_tab
+        ${LIB_DIR}/ability
         ${INC_DIR}/
 )
 

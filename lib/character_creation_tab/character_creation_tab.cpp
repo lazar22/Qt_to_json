@@ -12,8 +12,11 @@
 #include <QGroupBox>
 #include <QMenuBar>
 
-character_creation_tab::character_creation_tab(QWidget *parent, const QString _file_path_)
-    : QWidget(parent), _file_path(_file_path_) {
+#include "image_handler.h"
+
+character_creation_tab::character_creation_tab(QWidget* parent, const QString _file_path_)
+    : QWidget(parent), _file_path(_file_path_)
+{
     width = parent->width();
     height = parent->height();
 
@@ -21,9 +24,10 @@ character_creation_tab::character_creation_tab(QWidget *parent, const QString _f
     connect_signals();
 }
 
-void character_creation_tab::setup_ui() {
+void character_creation_tab::setup_ui()
+{
     // Must be heap-allocated
-    auto *mainLayout = new QHBoxLayout;
+    auto* mainLayout = new QHBoxLayout;
 
     // Left Image
     _image_label.setParent(this);
@@ -41,12 +45,8 @@ void character_creation_tab::setup_ui() {
     _image_label.setAlignment(Qt::AlignCenter);
     mainLayout->addWidget(&_image_label);
 
-    connect(&_image_label, &DragDropImgLabel::image_dropped, this, [this](const QString &path) {
-        load_image(path);
-    });
-
     // === Right Panel ===
-    auto *right_panel = new QVBoxLayout;
+    auto* right_panel = new QVBoxLayout;
 
     _name_input.setParent(this);
     _aftername_input.setParent(this);
@@ -56,12 +56,12 @@ void character_creation_tab::setup_ui() {
     _age_input.setFixedWidth(50);
     _height_input.setFixedWidth(50);
 
-    auto *basic_info = new QFormLayout;
+    auto* basic_info = new QFormLayout;
     basic_info->addRow("Name:", &_name_input);
     basic_info->addRow("Aftername:", &_aftername_input);
     right_panel->addLayout(basic_info);
 
-    auto *basic_info_grid = new QGridLayout;
+    auto* basic_info_grid = new QGridLayout;
     basic_info_grid->addWidget(new QLabel("Age:"), 0, 0);
     basic_info_grid->addWidget(&_age_input, 0, 1);
     basic_info_grid->addWidget(new QLabel("Height:"), 0, 2);
@@ -69,12 +69,13 @@ void character_creation_tab::setup_ui() {
     right_panel->addLayout(basic_info_grid);
 
     // Dropdowns
-    QComboBox *combos[] = {
+    QComboBox* combos[] = {
         &_stars_combo, &_combat_class_combo,
         &_type_combo, &_damage_class_combo, &_armor_class_combo,
     };
 
-    for (auto *combo: combos) {
+    for (auto* combo : combos)
+    {
         combo->setParent(this);
         combo->setFixedWidth(100);
     }
@@ -86,7 +87,7 @@ void character_creation_tab::setup_ui() {
     _damage_class_combo.addItems(get_attack_type_options());
     _armor_class_combo.addItems(getDefenseTypeOptions());
 
-    auto *class_info_layout = new QGridLayout;
+    auto* class_info_layout = new QGridLayout;
     class_info_layout->setSpacing(5);
     class_info_layout->addWidget(new QLabel("Stars:"), 0, 0);
     class_info_layout->addWidget(&_stars_combo, 0, 1);
@@ -94,7 +95,7 @@ void character_creation_tab::setup_ui() {
     class_info_layout->addWidget(&_combat_class_combo, 0, 3);
     right_panel->addLayout(class_info_layout);
 
-    auto *ch_type_layout = new QGridLayout;
+    auto* ch_type_layout = new QGridLayout;
     ch_type_layout->addWidget(new QLabel("Type:"), 0, 0);
     ch_type_layout->addWidget(&_type_combo, 0, 1);
     ch_type_layout->addWidget(new QLabel("Attack:"), 0, 2);
@@ -103,29 +104,30 @@ void character_creation_tab::setup_ui() {
     ch_type_layout->addWidget(&_armor_class_combo, 0, 5);
     right_panel->addLayout(ch_type_layout);
 
-    auto *school_layout = new QFormLayout;
+    auto* school_layout = new QFormLayout;
     school_layout->addRow("School:", &_school_combo);
     right_panel->addLayout(school_layout);
 
-    auto *terrain_layout = new QHBoxLayout;
+    auto* terrain_layout = new QHBoxLayout;
     QStringList terrain_icons = {"🏙️", "⛰️", "🏠"};
     const QStringList face_options = {"😆", "😁", "😀", "😐", "😣", "😡"};
 
-    QComboBox *terrainCombos[] = {
+    QComboBox* terrainCombos[] = {
         &street_combo,
         &outdoor_combo,
         &indoor_combo
     };
 
-    for (int i = 0; i < 3; ++i) {
-        auto *vbox = new QVBoxLayout;
+    for (int i = 0; i < 3; ++i)
+    {
+        auto* vbox = new QVBoxLayout;
 
-        QLabel *terrainIcon = new QLabel(terrain_icons[i]);
+        QLabel* terrainIcon = new QLabel(terrain_icons[i]);
         terrainIcon->setAlignment(Qt::AlignCenter);
         terrainIcon->setStyleSheet("font-size: 35px;");
         vbox->addWidget(terrainIcon);
 
-        QComboBox *combo = terrainCombos[i];
+        QComboBox* combo = terrainCombos[i];
         combo->addItems(face_options);
         combo->setStyleSheet(R"(
         QComboBox {
@@ -151,8 +153,8 @@ void character_creation_tab::setup_ui() {
     right_panel->addLayout(terrain_layout);
 
     // Stats
-    auto *stats_group = new QGroupBox("Character Stats");
-    auto *stats_grid = new QGridLayout;
+    auto* stats_group = new QGroupBox("Character Stats");
+    auto* stats_grid = new QGridLayout;
 
     stats_group->setLayout(stats_grid);
     stats_group->setStyleSheet("QGroupBox { font-weight: bold; margin-top: 10px; }");
@@ -172,7 +174,7 @@ void character_creation_tab::setup_ui() {
         "🌀", "🛡️🌀", "💀🛡️", "🔫"
     };
 
-    QLineEdit *_buffer[17] = {
+    QLineEdit* _buffer[17] = {
         &_hp_input, &_atk_input, &_def_input, &_healing_input,
         &_accuracy_input, &_evasion_input, &_crit_input,
         &_crit_res_input, &_crit_dmg_input, &_crit_dmg_res_input,
@@ -180,7 +182,8 @@ void character_creation_tab::setup_ui() {
         &_cc_res_input, &_def_piercing_input, &_mag_count_input,
     };
 
-    for (int i = 0; i < buffer.size(); i++) {
+    for (int i = 0; i < buffer.size(); i++)
+    {
         const int row = i / 2;
         const int col = (i % 2) * 2;
         stats_grid->addWidget(new QLabel(icons[i] + " " + buffer[i] + ":"), row, col);
@@ -200,9 +203,19 @@ void character_creation_tab::setup_ui() {
     this->setLayout(mainLayout);
 }
 
-void character_creation_tab::connect_signals() {
+void character_creation_tab::connect_signals()
+{
+    connect(&_image_label, &DragDropImgLabel::image_dropped, this, [this](const QString& path)
+    {
+        if (image_handler::load_image(&_image_label, path))
+        {
+            _image_path = path;
+        }
+    });
+
     // Connect submit
-    connect(&_submitBtn, &QPushButton::clicked, this, [this]() {
+    connect(&_submitBtn, &QPushButton::clicked, this, [this]()
+    {
         character ch;
         ch.set_basic_info(_name_input.text().toStdString(), _aftername_input.text().toStdString(),
                           _age_input.text().toInt(), _height_input.text().toInt());
@@ -230,9 +243,9 @@ void character_creation_tab::connect_signals() {
 
         const QString character_folder = _file_path + CHARACTER_FOLDER;
 
-        create_file(images_folder);
-        create_file(ch_img_folder);
-        create_file(character_folder);
+        image_handler::create_file(images_folder);
+        image_handler::create_file(ch_img_folder);
+        image_handler::create_file(character_folder);
 
         ch.set_image(_image_path.toStdString(), ch_img_folder.toStdString());
 
@@ -242,8 +255,9 @@ void character_creation_tab::connect_signals() {
 }
 
 
-void character_creation_tab::create_stats_input_fields() {
-    QLineEdit *inputs[] = {
+void character_creation_tab::create_stats_input_fields()
+{
+    QLineEdit* inputs[] = {
         &_hp_input, &_atk_input, &_def_input, &_healing_input,
         &_accuracy_input, &_evasion_input, &_crit_input,
         &_crit_res_input, &_crit_dmg_input, &_crit_dmg_res_input,
@@ -251,27 +265,9 @@ void character_creation_tab::create_stats_input_fields() {
         &_cc_res_input, &_def_piercing_input, &_mag_count_input,
     };
 
-    for (auto *input: inputs) {
+    for (auto* input : inputs)
+    {
         input->setParent(this);
         input->setAlignment(Qt::AlignRight);
     }
 }
-
-void character_creation_tab::create_file(const QString &path) {
-    const QDir dir(path);
-    if (!dir.exists()) {
-        dir.mkpath(".");
-    }
-}
-
-void character_creation_tab::load_image(const QString &path) {
-    QPixmap pix(path);
-    if (!pix.isNull()) {
-        _image_label.setText("");
-        _image_label.setPixmap(pix.scaled(
-            _image_label.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        _image_path = path;
-    }
-}
-
-
