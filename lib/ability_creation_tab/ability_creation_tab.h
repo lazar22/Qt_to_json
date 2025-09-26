@@ -76,7 +76,7 @@ public:
 
     ~ability_creation_tab() override = default;
 
-private slots:
+public slots :
     void refresh_character_list();
 };
 
