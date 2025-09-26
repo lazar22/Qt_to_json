@@ -9,6 +9,7 @@
 
 #include <QString>
 #include <QPixmap>
+#include <QDir>
 
 namespace image_handler
 {
