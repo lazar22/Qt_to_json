@@ -104,4 +104,42 @@ namespace json_utils
         out.close();
         return true;
     }
+
+    static std::string json_escape(const std::string& in)
+    {
+        std::string out;
+        out.reserve(in.size() + 16);
+        for (unsigned char c : in)
+        {
+            switch (c)
+            {
+            case '\"': out += "\\\"";
+                break;
+            case '\\': out += "\\\\";
+                break;
+            case '\b': out += "\\b";
+                break;
+            case '\f': out += "\\f";
+                break;
+            case '\n': out += "\\n";
+                break;
+            case '\r': out += "\\r";
+                break;
+            case '\t': out += "\\t";
+                break;
+            default:
+                if (c < 0x20)
+                {
+                    char buf[7];
+                    std::snprintf(buf, sizeof(buf), "\\u%04X", c);
+                    out += buf;
+                }
+                else
+                {
+                    out += static_cast<char>(c);
+                }
+            }
+        }
+        return out;
+    }
 }

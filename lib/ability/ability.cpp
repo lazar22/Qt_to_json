@@ -53,7 +53,7 @@ void ability::set_ability_image(const std::string& ability_name,
     {
         const std::string new_ability_img_filename =
             string_handler::to_lower(string_handler::remove_file_extension(connected_character_name, ".json"))
-            + "_" + string_handler::to_lower(ability_name) + ".png";
+            + "_" + string_handler::to_lower(string_handler::remove_empty_places(ability_name)) + ".png";
         const std::filesystem::path new_ability_img_path =
             std::filesystem::path(dest_folder) / new_ability_img_filename;
 
@@ -102,25 +102,32 @@ std::string ability::to_json() const
 
     oss << " \"Ability\": {\n";
     oss << "    \"ex_skill\": {\n";
-    oss << "    \"name\": " << "\"" << string_handler::remove_empty_places(ex_skill_name) << "\",\n";
-    oss << "    \"description\": " << "\"" << ex_skill_description << "\",\n";
+    oss << "    \"name\": " << "\""
+        << json_utils::json_escape(string_handler::remove_empty_places(ex_skill_name)) << "\",\n";
+    oss << "    \"description\": " << "\""
+        << json_utils::json_escape(ex_skill_description) << "\",\n";
     oss << "    \"cost\": " << ex_skill_cost << ",\n";
-    oss << "    \"image\": " << "\"" << skill_filename[0] << "\"" << "\n";
+    oss << "    \"image\": " << "\"" << json_utils::json_escape(skill_filename[0]) << "\"" << "\n";
     oss << "    },\n";
     oss << "    \"normal_skill\": {\n";
-    oss << "    \"name\": " << "\"" << string_handler::remove_empty_places(normal_skill_name) << "\",\n";
-    oss << "    \"description\": " << "\"" << normal_skill_description << "\",\n";
-    oss << "    \"image\": " << "\"" << skill_filename[1] << "\"" << "\n";
+    oss << "    \"name\": " << "\""
+        << json_utils::json_escape(string_handler::remove_empty_places(normal_skill_name)) << "\",\n";
+    oss << "    \"description\": " << "\"" << json_utils::json_escape(normal_skill_description) << "\",\n";
+    oss << "    \"image\": " << "\"" << json_utils::json_escape(skill_filename[1]) << "\"" << "\n";
     oss << "    },\n";
+
     oss << "    \"passive_skill\": {\n";
-    oss << "    \"name\": " << "\"" << string_handler::remove_empty_places(passive_skill_name) << "\",\n";
-    oss << "    \"description\": " << "\"" << passive_skill_description << "\",\n";
-    oss << "    \"image\": " << "\"" << skill_filename[2] << "\"" << "\n";
+    oss << "    \"name\": " << "\"" << json_utils::json_escape(string_handler::remove_empty_places(passive_skill_name))
+        << "\",\n";
+    oss << "    \"description\": " << "\"" << json_utils::json_escape(passive_skill_description) << "\",\n";
+    oss << "    \"image\": " << "\"" << json_utils::json_escape(skill_filename[2]) << "\"" << "\n";
     oss << "    },\n";
+
     oss << "    \"sub_skill\": {\n";
-    oss << "    \"name\": " << "\"" << string_handler::remove_empty_places(sub_skill_name) << "\",\n";
-    oss << "    \"description\": " << "\"" << sub_skill_description << "\",\n";
-    oss << "    \"image\": " << "\"" << skill_filename[3] << "\"" << "\n";
+    oss << "    \"name\": " << "\"" << json_utils::json_escape(string_handler::remove_empty_places(sub_skill_name))
+        << "\",\n";
+    oss << "    \"description\": " << "\"" << json_utils::json_escape(sub_skill_description) << "\",\n";
+    oss << "    \"image\": " << "\"" << json_utils::json_escape(skill_filename[3]) << "\"" << "\n";
     oss << "    }\n";
     oss << "  }";
 
