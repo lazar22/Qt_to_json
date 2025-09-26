@@ -20,6 +20,7 @@ add_executable(executable
         ${LIB_DIR}/weapon_creation_tab/weapon_creation_tab.cpp
         ${LIB_DIR}/weapon/weapon.cpp
         ${LIB_DIR}/ability_creation_tab/ability_creation_tab.cpp
+        ${LIB_DIR}/ability/ability.cpp
 )
 
 target_include_directories(executable PRIVATE
@@ -30,6 +31,7 @@ target_include_directories(executable PRIVATE
         ${LIB_DIR}/weapon_creation_tab
         ${LIB_DIR}/weapon
         ${LIB_DIR}/ability_creation_tab
+        ${LIB_DIR}/ability
         ${INC_DIR}/
 )
 

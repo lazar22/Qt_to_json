@@ -5,9 +5,10 @@
 #ifndef FILE_NAMES_H
 #define FILE_NAMES_H
 
-#define IMAGE_FOLDER "/image"
-#define CHARACTER_FOLDER "/characters"
-#define WEAPON_FOLDER "/weapons"
-#define EQUIPMENT_FOLDER "/equipment"
+#define CHARACTER_FOLDER    "/characters"
+#define EQUIPMENT_FOLDER    "/equipment"
+#define ABILITY_FOLDER      "/abilities"
+#define WEAPON_FOLDER       "/weapons"
+#define IMAGE_FOLDER        "/image"
 
 #endif //FILE_NAMES_H

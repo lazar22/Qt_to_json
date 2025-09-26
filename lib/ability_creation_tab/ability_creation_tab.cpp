@@ -2,7 +2,7 @@
 // Created by roki on 2025-09-25.
 //
 #include "ability_creation_tab.h"
-
+#include "ability.h"
 
 #include "image_handler.h"
 #include "file_names.h"
@@ -193,6 +193,41 @@ void ability_creation_tab::connect_signals()
         const QString selected_file = _character_selector.currentData().toString();
         _full_path = _file_path + CHARACTER_FOLDER + "/" + selected_file;
 
+        ability ab;
+
+        ab.set_connected_character_name(selected_file.toStdString());
+        ab.set_ability_cost(ex_cost.text().toInt());
+
+        ab.set_ability_names(ex_name.text().toStdString(),
+                             normal_skill_name.text().toStdString(),
+                             passive_skill_name.text().toStdString(),
+                             sub_skill_name.text().toStdString());
+
+        ab.set_ability_descriptions(ex_description.toPlainText().toStdString(),
+                                    normal_skill_description.toPlainText().toStdString(),
+                                    passive_skill_description.toPlainText().toStdString(),
+                                    sub_skill_description.toPlainText().toStdString());
+
+        const QString ability_image_folder = _file_path + IMAGE_FOLDER + ABILITY_FOLDER + "/";
+        image_handler::create_file(ability_image_folder);
+
+        ab.set_ability_image(ex_name.text().toStdString(),
+                             _image_ex_path.toStdString(),
+                             ability_image_folder.toStdString());
+
+        ab.set_ability_image(normal_skill_name.text().toStdString(),
+                             _image_normal_path.toStdString(),
+                             ability_image_folder.toStdString());
+
+        ab.set_ability_image(passive_skill_name.text().toStdString(),
+                             _image_passive_path.toStdString(),
+                             ability_image_folder.toStdString());
+
+        ab.set_ability_image(sub_skill_name.text().toStdString(),
+                             _image_sub_path.toStdString(),
+                             ability_image_folder.toStdString());
+
+        ab.create_ability(_full_path.toStdString());
         qDebug() << _full_path;
     });
 }

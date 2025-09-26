@@ -153,15 +153,15 @@ void weapon_creation_tab::connect_signals()
         if (!_unique_equipment_path.isEmpty())
         {
             image_handler::create_file(equipment_image_folder);
-            QFileInfo ueInfo(_unique_equipment_path);
-            const QString destPath = equipment_image_folder + "/" + ueInfo.fileName();
-            if (QFile::exists(destPath))
+            const QFileInfo use_info(_unique_equipment_path);
+            const QString dest_path = equipment_image_folder + "/" + use_info.fileName();
+            if (QFile::exists(dest_path))
             {
-                QFile::remove(destPath);
+                QFile::remove(dest_path);
             }
-            if (QFile::copy(_unique_equipment_path, destPath))
+            if (QFile::copy(_unique_equipment_path, dest_path))
             {
-                unique_equipment_dest_path = destPath;
+                unique_equipment_dest_path = dest_path;
             }
         }
 
